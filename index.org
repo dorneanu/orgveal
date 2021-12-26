@@ -1,0 +1,595 @@
+#+TITLE: Presentation as a Code
+#+SUBTITLE: Create modern presentations using ORG mode and reveal.js
+#+AUTHOR: Victor Dorneanu
+#+DATE: 2021-12-23
+#+OPTIONS: toc:nil reveal_width:1200 reveal_height:720
+#+REVEAL_THEME: themes/css/reveal-code-layers-multicolor.css
+#+REVEAL_TRANS: none
+
+# Configure first slide
+#+REVEAL_TITLE_SLIDE: <h1>%t</h1><h2>%s</h2><p class="author">%d %a</p>
+
+# Configure revealjs relevant settings
+#+REVEAL_ROOT: reveal.js
+#+REVEAL_ROOT: https://cdn.jsdelivr.net/npm/reveal.js
+#+REVEAL_VERSION: 4
+#+REVEAL_ADD_PLUGIN: chalkboard RevealChalkboard https://cdn.jsdelivr.net/gh/rajgoel/reveal.js-plugins/chalkboard/plugin.js
+#+REVEAL_ADD_PLUGIN: menu RevealMenu https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.js
+#+REVEAL_ADD_PLUGIN: chart RevealChart https://cdn.jsdelivr.net/gh/rajgoel/reveal.js-plugins/chart/plugin.js
+
+# Add CSS here
+#+REVEAL_HEAD_PREAMBLE: <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.css"/>
+
+# Add JS here
+#+REVEAL_HEAD_PREAMBLE: <script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
+#+REVEAL_HEAD_PREAMBLE: <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.2.0/chart.min.js"></script>
+#+REVEAL_HEAD_PREAMBLE: <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.min.js" charset="utf-8"></script>
+
+
+* Motivation
+- because I was sick of Powerpoint
+  - but also Latex was/is at some point way to much for a simple presentation
+- ORG file is single source of truth
+  - you can export to multiple formats
+    - PDF
+    - HTML
+    - Markdown/Asciidoc etc.
+    - but also reveal.js presentations
+- reveal.js looks awesome
+  - the are lots of [[https://github.com/rajgoel/reveal.js-plugins][plugins]]
+- highly inspired by [[https://zenika.github.io/adoc-presentation-model/reveal/reveal-my-asciidoc.html][Reveal my Asciidoc - A deep dive into presentation-as-code]]
+  - but I wanted to do it without ~asciidoc~
+  - "purely" in Emacs and ORG mode
+* Navigation
+These keyboard shortcuts are available:
+- ~?~: to see the help menu
+- navigation:
+  - ~l~: next slide
+  - ~h~: previous slide
+  - ~k~: navigate up
+  - ~j~: navigate down
+- ~m~: to toggle menu
+  - you can switch between themes
+  - you can jump directly to slides
+- ~ESC~: slide overview
+- ~CTRL+SHIFT F~: search in presentation
+
+* Where to start?
+For the beginning I'd recommend you the following steps:
+- you decide which one to use: [[https://github.com/yjwen/org-reveal][org-reveal]] or [[https://gitlab.com/oer/org-re-reveal][org-re-reveal]]
+- you checkout this repository and closely inspect ~index.org~
+
+
+* C3.js
+Awesome D3.js based chart library.
+Basic usage:
+
+#+begin_src html
+<div id="chart_example"></div>
+var chart = c3.generate({
+    bindto: '#chart_example',
+    size: {
+      width: <svg width>,
+      height: <svg height>,
+    },
+    data: {
+     <Your data>
+    }
+});
+<script>
+#+end_src
+All charts are *interactive*. So make sure you use your mouse!
+** Basic line chart
+
+#+begin_src python :noweb-ref c3jslinechart :exports none
+htmlCode = """<div id="chart"></div>
+<script>
+var chart = c3.generate({
+    bindto: '#chart',
+    size: {
+      width: 800,
+      height: 550,
+    },
+    data: {
+      columns: [
+        ['data1', 30, 200, 100, 400, 150, 250],
+        ['data2', 50, 20, 10, 40, 15, 25]
+      ]
+    }
+});
+</script>"""
+#+end_src
+
+#+REVEAL_HTML: <div class="column" style="float:left; width: 30%; font-size: 14px;">
+#+begin_src python :exports results :results output :wrap src html :noweb yes
+<<c3jslinechart>>
+print("{}".format(htmlCode))
+#+end_src
+#+REVEAL_HTML: </div>
+
+
+#+REVEAL_HTML: <div class="column" style="float:right; width: 70%">
+#+begin_src python :exports results :results output html :noweb yes
+<<c3jslinechart>>
+print("{}".format(htmlCode))
+#+end_src
+#+REVEAL_HTML: </div>
+
+** Pie chart
+#+begin_src python :noweb-ref c3jspiechart :exports none
+htmlCode = """
+<div id="chart2"></div>
+<script>
+var chart = c3.generate({
+    bindto: '#chart2',
+    size: {
+      width: 1100,
+      height: 500,
+    },
+    data: {
+        columns: [
+            ['data1', 30],
+            ['data2', 120],
+            ["setosa", 0.2, 0.2, 0.2, 0.2, 0.2, 0.4, 0.3, 0.2, 0.2, 0.1, 0.2, 0.2, 0.1, 0.1, 0.2, 0.4, 0.4, 0.3, 0.3, 0.3, 0.2, 0.4, 0.2, 0.5, 0.2, 0.2, 0.4, 0.2, 0.2, 0.2, 0.2, 0.4, 0.1, 0.2, 0.2, 0.2, 0.2, 0.1, 0.2, 0.2, 0.3, 0.3, 0.2, 0.6, 0.4, 0.3, 0.2, 0.2, 0.2, 0.2],
+            ["versicolor", 1.4, 1.5, 1.5, 1.3, 1.5, 1.3, 1.6, 1.0, 1.3, 1.4, 1.0, 1.5, 1.0, 1.4, 1.3, 1.4, 1.5, 1.0, 1.5, 1.1, 1.8, 1.3, 1.5, 1.2, 1.3, 1.4, 1.4, 1.7, 1.5, 1.0, 1.1, 1.0, 1.2, 1.6, 1.5, 1.6, 1.5, 1.3, 1.3, 1.3, 1.2, 1.4, 1.2, 1.0, 1.3, 1.2, 1.3, 1.3, 1.1, 1.3],
+            ["virginica", 2.5, 1.9, 2.1, 1.8, 2.2, 2.1, 1.7, 1.8, 1.8, 2.5, 2.0, 1.9, 2.1, 2.0, 2.4, 2.3, 1.8, 2.2, 2.3, 1.5, 2.3, 2.0, 2.0, 1.8, 2.1, 1.8, 1.8, 1.8, 2.1, 1.6, 1.9, 2.0, 2.2, 1.5, 1.4, 2.3, 2.4, 1.8, 1.8, 2.1, 2.4, 2.3, 1.9, 2.3, 2.5, 2.3, 1.9, 2.0, 2.3, 1.8],
+        ],
+        type : 'donut',
+        onclick: function (d, i) { console.log("onclick", d, i); },
+        onmouseover: function (d, i) { console.log("onmouseover", d, i); },
+        onmouseout: function (d, i) { console.log("onmouseout", d, i); }
+    },
+    donut: {
+        title: "Iris Petal Width"
+    }
+});
+</script>
+"""
+#+end_src
+
+#+REVEAL_HTML: <div class="column" style="float:left; width: 60%; font-size: 14px;">
+#+begin_src python :exports results :results output :wrap src html :noweb yes
+<<c3jspiechart>>
+print("{}".format(htmlCode))
+#+end_src
+#+REVEAL_HTML: </div>
+
+
+#+REVEAL_HTML: <div class="column" style="float:right; width: 40%">
+#+begin_src python :exports results :results output html :noweb yes
+<<c3jspiechart>>
+print("{}".format(htmlCode))
+#+end_src
+#+REVEAL_HTML: </div>
+
+** Combination of line and bar chart
+#+begin_export html
+<div id="chart3"></div>
+<script>
+var chart = c3.generate({
+    bindto: '#chart3',
+    data: {
+        columns: [
+            ['data1', 30, 20, 50, 40, 60, 50],
+            ['data2', 200, 130, 90, 240, 130, 220],
+            ['data3', 300, 200, 160, 400, 250, 250],
+            ['data4', 200, 130, 90, 240, 130, 220],
+            ['data5', 130, 120, 150, 140, 160, 150],
+            ['data6', 90, 70, 20, 50, 60, 120],
+        ],
+        type: 'bar',
+        types: {
+            data3: 'spline',
+            data4: 'line',
+            data6: 'area',
+        },
+        groups: [
+            ['data1','data2']
+        ]
+    },
+    size: {
+      width: 1100,
+      height: 550,
+    }
+});
+</script>
+#+end_export
+** Custom data colors
+#+begin_export html
+<div id="chart4"></div>
+<script>
+var chart = c3.generate({
+    bindto: '#chart4',
+    size: {
+      width: 1100,
+      height: 500,
+    },
+    data: {
+        columns: [
+            ['data1', 30, 20, 50, 40, 60, 50],
+            ['data2', 200, 130, 90, 240, 130, 220],
+            ['data3', 300, 200, 160, 400, 250, 250]
+        ],
+        type: 'bar',
+        colors: {
+            data1: '#ff0000',
+            data2: '#00ff00',
+            data3: '#0000ff'
+        },
+        color: function (color, d) {
+            // d will be 'id' when called for legends
+            return d.id && d.id === 'data3' ? d3.rgb(color).darker(d.value / 150) : color;
+        }
+    }
+});
+</script>
+#+end_export
+
+** Empty slide
+- bla
+- askjh
+* Some bla ble
+:PROPERTIES:
+:reveal_background: inear-gradient(to left, #910830, #521623)
+:END:
+- boruack
+- aksdkjhasd
+- asdkjhasd
+** Charts
+
+#+begin_export html
+<canvas data-chart="bar">
+<!--
+{
+ "data": {
+  "labels": ["January"," February"," March"," April"," May"," June"," July"],
+  "datasets":[
+   {
+    "data":[65,59,80,81,56,55,40],
+    "label":"My first dataset","backgroundColor":"rgba(20,220,220,.8)"
+   },
+   {
+    "data":[28,48,40,19,86,27,90],
+    "label":"My second dataset","backgroundColor":"rgba(220,120,120,.8)"
+   }
+  ]
+ },
+ "options": { "responsive": "true", "maintainAspectRatio":"false"}
+}
+-->
+</canvas>
+#+end_export
+** Chart2
+
+#+begin_export html
+<canvas data-chart="line">
+My first dataset, 65, 59, 80, 81, 56, 55, 40
+<!-- This is a comment that will be ignored -->
+My second dataset, 28, 48, 40, 19, 86, 27, 90
+<!--
+{
+
+ "data" : {
+  "labels" : ["Enero", "Febrero", "Marzo", "Avril", "Mayo", "Junio", "Julio"],
+  "datasets" : [{ "borderColor": "#0f0", "borderDash": ["5","10"] }, { "borderColor": "#0ff" } ]
+ },
+ "options": { "responsive": "true", "maintainAspectRatio":"false"}
+}
+-->
+</canvas>
+#+end_export
+** JS Example
+
+#+begin_export html
+<canvas data-chart="bar">
+<!--
+{
+    "data": {
+      "labels": ["1900", "1950", "1999", "2050"],
+      "datasets": [
+        {
+          "label": "Africa",
+          "backgroundColor": "#3e95cd",
+          "data": [133,221,783,2478]
+        }, {
+          "label": "Europe",
+          "backgroundColor": "#8e5ea2",
+          "data": [408,547,675,734]
+        }
+      ]
+    },
+    "options": { "responsive": "true", "maintainAspectRatio":"false"}
+}
+-->
+</canvas>
+#+end_export
+** Bar
+
+#+begin_export html
+<canvas data-chart="bar">
+<!--
+{
+  "options": {
+    "maintainAspectRatio": "false",
+    "responsive": "true"
+  },
+  "data": {
+    "datasets": [
+      {
+        "backgroundColor": "rgb(62,149,205,0.1)",
+        "borderColor": "rgb(62,149,205)",
+        "label": "Total",
+        "data": [
+          86,
+          114,
+          106,
+          106,
+          107,
+          111,
+          133
+        ]
+      },
+      {
+        "backgroundColor": "rgb(60,186,159,0.1)",
+        "borderColor": "rgb(60,186,159)",
+        "label": "Accepted",
+        "data": [
+          70,
+          90,
+          44,
+          60,
+          83,
+          90,
+          100
+        ]
+      },
+      {
+        "backgroundColor": "rgb(255,165,0,0.1)",
+        "borderColor": "rgb(255,165,0)",
+        "label": "Pending",
+        "data": [
+          10,
+          21,
+          60,
+          44,
+          17,
+          21,
+          17
+        ]
+      },
+      {
+        "backgroundColor": "rgb(196,88,80,0.1)",
+        "borderColor": "rgb(196,88,80)",
+        "label": "Rejected",
+        "data": [
+          6,
+          3,
+          2,
+          2,
+          7,
+          0,
+          16
+        ]
+      }
+    ],
+    "labels": [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday"
+    ]
+  }
+}
+-->
+</canvas>
+#+end_export
+* Diagrams
+** Plantuml
+*** Components
+#+begin_src plantuml :file ./images/plantuml/first.png :exports results
+@startuml
+scale 720 width
+skinparam dpi 300
+skinparam backgroundcolor transparent
+note as n
+	ActiveRecord
+	("save yourself")
+end note
+
+note left of Ballot
+	Ballot ballot = new Ballot( ... );
+	ballot.save();
+end note
+@enduml
+#+end_src
+
+#+RESULTS:
+[[file:./images/plantuml/first.png]]
+
+*** Components
+#+begin_src plantuml :file ./images/plantuml/2nd.png :exports results
+@startuml
+scale 720 width
+skinparam dpi 300
+skinparam backgroundcolor transparent
+note as n
+	ActiveRecord
+	("save yourself")
+end note
+
+class DAO{
+	{static} Entity find(id)
+	{static} List<Entity> findBy(criteria for select)
+	update(Entity)
+	save(Entity)
+	delete(Entity)
+	{static} Finder
+}
+
+Ballot --|> DAO
+
+note left of Ballot
+	Ballot ballot = new Ballot( ... );
+	ballot.save();
+end note
+@enduml
+#+end_src
+
+#+RESULTS:
+[[file:./images/plantuml/2nd.png]]
+
+*** Sequance diagram
+
+#+CAPTION: Some sequence diagram example
+#+begin_src plantuml :file ./images/plantuml/seq.png :exports results
+@startuml
+scale 720 width
+skinparam dpi 300
+skinparam backgroundcolor transparent
+
+skinparam Shadowing false
+
+
+Alice -> Bob: Authentication Request
+Bob -> RequestHandler: validated Authenticated Request
+RequestHandler --> Bob: Authenticated Response (OK)
+Bob --> Alice: Authentication Response (OK)
+
+'!include ../../plantuml-styles/ae-copyright-footer.txt
+@enduml
+#+end_src
+
+#+RESULTS:
+[[file:./images/plantuml/seq.png]]
+*** Display JSON data
+- Given following JSON data:
+
+#+ATTR_HTML: :style font-size: 16px;
+#+begin_src json :exports code
+{
+  "firstName": "John",
+  "lastName": "Smith",
+  "isAlive": true,
+  "age": 28,
+  "address": {
+    "streetAddress": "21 2nd Street",
+    "city": "New York",
+    "state": "NY",
+    "postalCode": "10021-3100"
+  },
+  "phoneNumbers": [
+    {
+      "type": "home",
+      "number": "212 555-1234"
+    },
+    {
+      "type": "office",
+      "number": "646 555-4567"
+    }
+  ],
+  "children": [],
+  "spouse": null
+}
+
+#+end_src
+
+#+REVEAL: split
+
+- We can generate this nice looking graph
+
+#+ATTR_HTML: :style margin-top: 20px;
+#+begin_src plantuml :file ./images/plantuml/json.png :exports results
+@startjson
+#highlight "lastName"
+#highlight "address" / "city"
+#highlight "phoneNumbers" / "0" / "number"
+{
+  "firstName": "John",
+  "lastName": "Smith",
+  "isAlive": true,
+  "age": 28,
+  "address": {
+    "streetAddress": "21 2nd Street",
+    "city": "New York",
+    "state": "NY",
+    "postalCode": "10021-3100"
+  },
+  "phoneNumbers": [
+    {
+      "type": "home",
+      "number": "212 555-1234"
+    },
+    {
+      "type": "office",
+      "number": "646 555-4567"
+    }
+  ],
+  "children": [],
+  "spouse": null
+}
+@endjson
+#+end_src
+
+* Headline
+  :PROPERTIES:
+  :reveal_extra_attr: data-background-video="https://static.slid.es/site/homepage/v1/homepage-video-editor.mp4" data-background-video-loop data-background-video-muted
+  :END:
+  some text here:
+  - alles klar
+  - asdak
+   #+ATTR_REVEAL: :frag (grow shrink zoom-in fade-out none) :frag_idx (4 3 2 1 -)
+   * I will grow.
+   * I will shrink.
+   * I zoomed in.
+   * I will fade out.
+   * I don't fragment.
+* Tests for different languages
+** HTML
+# Code copied from Readme.org
+#+BEGIN_SRC html
+<h1 class="whatever">hello, what's your name</h1>
+#+END_SRC
+
+** JavaScript
+# Code copied from Readme.org
+#+BEGIN_SRC js
+console.log("success");
+var x='string using single quote';
+x
+#+END_SRC
+
+** Python
+# Code copied from howto.org of emacs-reveal-howto
+#+BEGIN_SRC python
+def factorial(n):
+    if n < 2:
+        return 1
+    else:
+        return n * factorial(n - 1)
+
+print(factorial(10))
+#+END_SRC
+
+** Go
+# Code copied per https://gitlab.com/oer/org-re-reveal/merge_requests/11
+# from there: http://www.igordejanovic.net/courses/tech/GoLang/index.html#/5/19
+#+BEGIN_SRC go
+type Allergen int
+
+const (
+    IgEggs Allergen = 1 << iota // 1 << 0 which is 00000001
+    IgChocolate                 // 1 << 1 which is 00000010
+    IgNuts                      // 1 << 2 which is 00000100
+    IgStrawberries              // 1 << 3 which is 00001000
+    IgShellfish                 // 1 << 4 which is 00010000
+)
+#+END_SRC
+
+
+* Comment                                                                       :noexport:
+# Local variables:
+# after-save-hook: org-re-reveal-export-to-html
+# end:
