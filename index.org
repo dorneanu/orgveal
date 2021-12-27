@@ -2,7 +2,7 @@
 #+SUBTITLE: Create modern presentations using ORG mode and reveal.js
 #+AUTHOR: Victor Dorneanu
 #+DATE: 2021-12-23
-#+OPTIONS: toc:nil reveal_width:1200 reveal_height:720
+#+OPTIONS: toc:nil \n:t reveal_width:1200 reveal_height:720
 #+REVEAL_THEME: themes/css/reveal-code-layers-multicolor.css
 #+REVEAL_TRANS: none
 
@@ -19,22 +19,23 @@
 
 # Add CSS here
 #+REVEAL_HEAD_PREAMBLE: <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.css"/>
+#+REVEAL_HEAD_PREAMBLE: <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
 
 # Add JS here
 #+REVEAL_HEAD_PREAMBLE: <script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
 #+REVEAL_HEAD_PREAMBLE: <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.2.0/chart.min.js"></script>
 #+REVEAL_HEAD_PREAMBLE: <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.min.js" charset="utf-8"></script>
-
+#+REVEAL_HEAD_PREAMBLE: <script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 * Motivation
 - because I was sick of Powerpoint
   - but also Latex was/is at some point way to much for a simple presentation
-- ORG file is single source of truth
+- [[https://orgmode.org/][ORG]] file should be single source of truth
   - you can export to multiple formats
     - PDF
     - HTML
     - Markdown/Asciidoc etc.
-    - but also reveal.js presentations
+    - but also [[https://revealjs.com/][reveal.js]] presentations
 - reveal.js looks awesome
   - the are lots of [[https://github.com/rajgoel/reveal.js-plugins][plugins]]
 - highly inspired by [[https://zenika.github.io/adoc-presentation-model/reveal/reveal-my-asciidoc.html][Reveal my Asciidoc - A deep dive into presentation-as-code]]
@@ -51,20 +52,29 @@ These keyboard shortcuts are available:
 - ~m~: to toggle menu
   - you can switch between themes
   - you can jump directly to slides
-- ~ESC~: slide overview
+- ~ESC~ / ~O~: slide overview
 - ~CTRL+SHIFT F~: search in presentation
 
 * Where to start?
 For the beginning I'd recommend you the following steps:
 - you decide which one to use: [[https://github.com/yjwen/org-reveal][org-reveal]] or [[https://gitlab.com/oer/org-re-reveal][org-re-reveal]]
-- you checkout this repository and closely inspect ~index.org~
-
+  - I personally prefer [[https://gitlab.com/oer/org-re-reveal][org-re-reveal]]
+- you checkout [[https://github.com/dorneanu/orgveal][this repository]] and closely inspect ~index.org~
+  - there is a ~.dir-locals.el~ which reads the content of ~reveals-plugins-conf.js~ and assigns it to ~org-re-reveal-init-script~
+** Features
+- this presentation uses a CDN to fetch required (JavaScript) libraries
+  - if you want to use your own [[https://revealjs.com/themes/][theme]], then you'll need to have the CSS files somewhere on your disk
+- you can easily embed nice looking *charts* and *diagrams*
+  - I like [[https://c3js.org/][c3js]] for charts and [[https://plantuml.com/][plantuml]] for diagrams
+  - but you can add your libraries (check ~#REVEAL_HEAD_PREAMBLE~ at the beginning of the file)
+- diagrams are embedded as inline PNG (encoded as ~base64~) in the resulting HTML document
+  - I use a [[https://emacs.stackexchange.com/questions/36091/how-to-write-a-hook-to-transform-each-image-reference-on-export][hook]] to transform each PNG into base64 on export
 
 * C3.js
-Awesome D3.js based chart library.
-Basic usage:
+Awesome [[https://d3js.org/][D3.js]] based chart library. Basic usage in the ORG file:
 
 #+begin_src html
+#+begin_export html
 <div id="chart_example"></div>
 var chart = c3.generate({
     bindto: '#chart_example',
@@ -77,8 +87,9 @@ var chart = c3.generate({
     }
 });
 <script>
+#+end_export
 #+end_src
-All charts are *interactive*. So make sure you use your mouse!
+All charts are *interactive*. So make sure you use your mouse! And have a look at all [[https://c3js.org/examples.html][examples]].
 ** Basic line chart
 
 #+begin_src python :noweb-ref c3jslinechart :exports none
@@ -103,7 +114,7 @@ var chart = c3.generate({
 #+REVEAL_HTML: <div class="column" style="float:left; width: 30%; font-size: 14px;">
 #+begin_src python :exports results :results output :wrap src html :noweb yes
 <<c3jslinechart>>
-print("{}".format(htmlCode))
+print("#+begin_export html\n{}\n#+end_export".format(htmlCode))
 #+end_src
 #+REVEAL_HTML: </div>
 
@@ -117,14 +128,13 @@ print("{}".format(htmlCode))
 
 ** Pie chart
 #+begin_src python :noweb-ref c3jspiechart :exports none
-htmlCode = """
-<div id="chart2"></div>
+htmlCode = """<div id="chart2"></div>
 <script>
 var chart = c3.generate({
     bindto: '#chart2',
     size: {
-      width: 1100,
-      height: 500,
+      width: 600,
+      height: 550,
     },
     data: {
         columns: [
@@ -147,15 +157,15 @@ var chart = c3.generate({
 """
 #+end_src
 
-#+REVEAL_HTML: <div class="column" style="float:left; width: 60%; font-size: 14px;">
+#+REVEAL_HTML: <div class="column" style="float:left; width: 50%; font-size: 14px;">
 #+begin_src python :exports results :results output :wrap src html :noweb yes
 <<c3jspiechart>>
-print("{}".format(htmlCode))
+print("#+begin_export html\n{}#+end_export".format(htmlCode))
 #+end_src
 #+REVEAL_HTML: </div>
 
 
-#+REVEAL_HTML: <div class="column" style="float:right; width: 40%">
+#+REVEAL_HTML: <div class="column" style="float:right; width: 50%">
 #+begin_src python :exports results :results output html :noweb yes
 <<c3jspiechart>>
 print("{}".format(htmlCode))
@@ -163,8 +173,8 @@ print("{}".format(htmlCode))
 #+REVEAL_HTML: </div>
 
 ** Combination of line and bar chart
-#+begin_export html
-<div id="chart3"></div>
+#+begin_src python :noweb-ref c3jscombination :exports none
+htmlCode = """<div id="chart3"></div>
 <script>
 var chart = c3.generate({
     bindto: '#chart3',
@@ -188,21 +198,36 @@ var chart = c3.generate({
         ]
     },
     size: {
-      width: 1100,
+      width: 800,
       height: 550,
     }
 });
-</script>
-#+end_export
+</script>"""
+#+end_src
+
+#+REVEAL_HTML: <div class="column" style="float:left; width: 30%; font-size: 14px;">
+#+begin_src python :exports results :results output :wrap src html :noweb yes
+<<c3jscombination>>
+print("#+begin_export html\n{}\n#+end_export".format(htmlCode))
+#+end_src
+#+REVEAL_HTML: </div>
+
+#+REVEAL_HTML: <div class="column" style="float:right; width: 70%">
+#+begin_src python :exports results :results output html :noweb yes
+<<c3jscombination>>
+print("{}".format(htmlCode))
+#+end_src
+#+REVEAL_HTML: </div>
+
 ** Custom data colors
-#+begin_export html
-<div id="chart4"></div>
+#+begin_src python :noweb-ref c3jscustomcolors :exports none
+htmlCode = """<div id="chart4"></div>
 <script>
 var chart = c3.generate({
     bindto: '#chart4',
     size: {
-      width: 1100,
-      height: 500,
+      width: 700,
+      height: 550,
     },
     data: {
         columns: [
@@ -222,173 +247,49 @@ var chart = c3.generate({
         }
     }
 });
+</script>"""
+#+end_src
+
+#+REVEAL_HTML: <div class="column" style="float:left; width: 40%; font-size: 14px;">
+#+begin_src python :exports results :results output :wrap src html :noweb yes
+<<c3jscustomcolors>>
+print("#+begin_export html\n{}\n#+end_export".format(htmlCode))
+#+end_src
+#+REVEAL_HTML: </div>
+
+#+REVEAL_HTML: <div class="column" style="float:right; width: 60%">
+#+begin_src python :exports results :results output html :noweb yes
+<<c3jscustomcolors>>
+print("{}".format(htmlCode))
+#+end_src
+#+REVEAL_HTML: </div>
+
+* Diagrams
+I like to express myself through pictures/diagrams. A picture is still worth a thounsand words. That's why I use them:
+- to visualize
+  - software architecture
+  - (cloud) infrastructure
+  - depedencies between some components
+  - mind maps
+** Plantuml
+Let me quote [[https://en.wikipedia.org/wiki/PlantUML][Wikipedia]]:
+#+begin_quote
+PlantUML is an open-source tool allowing users to create diagrams from a plain text language. Besides various UML diagrams, PlantUML has support for various other software development related formats (such as Archimate, Block diagram, BPMN, C4, Computer network diagram, ERD, Gantt chart, Mind map, and WBD), as well as visualisation of JSON and YAML files.
+\\
+The language of PlantUML is an example of a domain-specific language. Besides its own DSL, PlantUML also understands AsciiMath, Creole, DOT, and LaTeX. It uses Graphviz software to layout its diagrams and Tikz for LaTeX support. Images can be output as PNG, SVG, LaTeX and even ASCII art. PlantUML has also been used to allow blind people to design and read UML diagrams.
+#+end_quote
+
+Just give it a try. You won't regret it! Also check out [[https://real-world-plantuml.com/][real-worl-plantuml.com]] for some *real* example.
+
+*** Components
+#+begin_export html
+<script>
+var lightboxDescription = GLightbox({
+    selector: '.glightbox'
+});
 </script>
 #+end_export
 
-** Empty slide
-- bla
-- askjh
-* Some bla ble
-:PROPERTIES:
-:reveal_background: inear-gradient(to left, #910830, #521623)
-:END:
-- boruack
-- aksdkjhasd
-- asdkjhasd
-** Charts
-
-#+begin_export html
-<canvas data-chart="bar">
-<!--
-{
- "data": {
-  "labels": ["January"," February"," March"," April"," May"," June"," July"],
-  "datasets":[
-   {
-    "data":[65,59,80,81,56,55,40],
-    "label":"My first dataset","backgroundColor":"rgba(20,220,220,.8)"
-   },
-   {
-    "data":[28,48,40,19,86,27,90],
-    "label":"My second dataset","backgroundColor":"rgba(220,120,120,.8)"
-   }
-  ]
- },
- "options": { "responsive": "true", "maintainAspectRatio":"false"}
-}
--->
-</canvas>
-#+end_export
-** Chart2
-
-#+begin_export html
-<canvas data-chart="line">
-My first dataset, 65, 59, 80, 81, 56, 55, 40
-<!-- This is a comment that will be ignored -->
-My second dataset, 28, 48, 40, 19, 86, 27, 90
-<!--
-{
-
- "data" : {
-  "labels" : ["Enero", "Febrero", "Marzo", "Avril", "Mayo", "Junio", "Julio"],
-  "datasets" : [{ "borderColor": "#0f0", "borderDash": ["5","10"] }, { "borderColor": "#0ff" } ]
- },
- "options": { "responsive": "true", "maintainAspectRatio":"false"}
-}
--->
-</canvas>
-#+end_export
-** JS Example
-
-#+begin_export html
-<canvas data-chart="bar">
-<!--
-{
-    "data": {
-      "labels": ["1900", "1950", "1999", "2050"],
-      "datasets": [
-        {
-          "label": "Africa",
-          "backgroundColor": "#3e95cd",
-          "data": [133,221,783,2478]
-        }, {
-          "label": "Europe",
-          "backgroundColor": "#8e5ea2",
-          "data": [408,547,675,734]
-        }
-      ]
-    },
-    "options": { "responsive": "true", "maintainAspectRatio":"false"}
-}
--->
-</canvas>
-#+end_export
-** Bar
-
-#+begin_export html
-<canvas data-chart="bar">
-<!--
-{
-  "options": {
-    "maintainAspectRatio": "false",
-    "responsive": "true"
-  },
-  "data": {
-    "datasets": [
-      {
-        "backgroundColor": "rgb(62,149,205,0.1)",
-        "borderColor": "rgb(62,149,205)",
-        "label": "Total",
-        "data": [
-          86,
-          114,
-          106,
-          106,
-          107,
-          111,
-          133
-        ]
-      },
-      {
-        "backgroundColor": "rgb(60,186,159,0.1)",
-        "borderColor": "rgb(60,186,159)",
-        "label": "Accepted",
-        "data": [
-          70,
-          90,
-          44,
-          60,
-          83,
-          90,
-          100
-        ]
-      },
-      {
-        "backgroundColor": "rgb(255,165,0,0.1)",
-        "borderColor": "rgb(255,165,0)",
-        "label": "Pending",
-        "data": [
-          10,
-          21,
-          60,
-          44,
-          17,
-          21,
-          17
-        ]
-      },
-      {
-        "backgroundColor": "rgb(196,88,80,0.1)",
-        "borderColor": "rgb(196,88,80)",
-        "label": "Rejected",
-        "data": [
-          6,
-          3,
-          2,
-          2,
-          7,
-          0,
-          16
-        ]
-      }
-    ],
-    "labels": [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday"
-    ]
-  }
-}
--->
-</canvas>
-#+end_export
-* Diagrams
-** Plantuml
-*** Components
 #+begin_src plantuml :file ./images/plantuml/first.png :exports results
 @startuml
 scale 720 width
@@ -406,6 +307,7 @@ end note
 @enduml
 #+end_src
 
+#+ATTR_HTML: :class glightbox
 #+RESULTS:
 [[file:./images/plantuml/first.png]]
 
