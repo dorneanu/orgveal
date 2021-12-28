@@ -282,15 +282,9 @@ The language of PlantUML is an example of a domain-specific language. Besides it
 Just give it a try. You won't regret it! Also check out [[https://real-world-plantuml.com/][real-worl-plantuml.com]] for some *real* example.
 
 *** Components
-#+begin_export html
-<script>
-var lightboxDescription = GLightbox({
-    selector: '.glightbox'
-});
-</script>
-#+end_export
-
-#+begin_src plantuml :file ./images/plantuml/first.png :exports results
+#+REVEAL_HTML: <div class="column" style="float:left; width: 40%; font-size: 14px;">
+#+CAPTION: Component diagram
+#+begin_src uml :noweb-ref pumlcomponent :exports code :results none
 @startuml
 scale 720 width
 skinparam dpi 300
@@ -306,13 +300,19 @@ note left of Ballot
 end note
 @enduml
 #+end_src
+#+REVEAL_HTML: </div>
 
+#+REVEAL_HTML: <div class="column" style="float:right; width: 60%">
 #+ATTR_HTML: :class glightbox
-#+RESULTS:
-[[file:./images/plantuml/first.png]]
+#+begin_src plantuml  :exports results :noweb yes
+<<pumlcomponent>>
+#+end_src
+#+REVEAL_HTML: </div>
 
 *** Components
-#+begin_src plantuml :file ./images/plantuml/2nd.png :exports results
+#+REVEAL_HTML: <div class="column" style="float:left; width: 40%; font-size: 14px;">
+#+CAPTION: Full component diagram
+#+begin_src text :exports code :noweb-ref pumlcomponentsfull
 @startuml
 scale 720 width
 skinparam dpi 300
@@ -339,14 +339,20 @@ note left of Ballot
 end note
 @enduml
 #+end_src
+#+REVEAL_HTML: </div>
 
-#+RESULTS:
-[[file:./images/plantuml/2nd.png]]
+#+REVEAL_HTML: <div class="column" style="float:right; width: 60%">
+#+ATTR_HTML: :class glightbox
+#+begin_src plantuml  :exports results :noweb yes
+<<pumlcomponentsfull>>
+#+end_src
+#+REVEAL_HTML: </div>
 
-*** Sequance diagram
+*** Sequence diagram
 
+#+REVEAL_HTML: <div class="column" style="float:left; width: 40%; font-size: 14px;">
 #+CAPTION: Some sequence diagram example
-#+begin_src plantuml :file ./images/plantuml/seq.png :exports results
+#+begin_src text :exports code :noweb-ref pumlsequence
 @startuml
 scale 720 width
 skinparam dpi 300
@@ -359,51 +365,21 @@ Alice -> Bob: Authentication Request
 Bob -> RequestHandler: validated Authenticated Request
 RequestHandler --> Bob: Authenticated Response (OK)
 Bob --> Alice: Authentication Response (OK)
-
-'!include ../../plantuml-styles/ae-copyright-footer.txt
 @enduml
 #+end_src
+#+REVEAL_HTML: </div>
 
-#+RESULTS:
-[[file:./images/plantuml/seq.png]]
-*** Display JSON data
-- Given following JSON data:
-
-#+ATTR_HTML: :style font-size: 16px;
-#+begin_src json :exports code
-{
-  "firstName": "John",
-  "lastName": "Smith",
-  "isAlive": true,
-  "age": 28,
-  "address": {
-    "streetAddress": "21 2nd Street",
-    "city": "New York",
-    "state": "NY",
-    "postalCode": "10021-3100"
-  },
-  "phoneNumbers": [
-    {
-      "type": "home",
-      "number": "212 555-1234"
-    },
-    {
-      "type": "office",
-      "number": "646 555-4567"
-    }
-  ],
-  "children": [],
-  "spouse": null
-}
-
+#+REVEAL_HTML: <div class="column" style="float:right; width: 60%">
+#+ATTR_HTML: :class glightbox
+#+begin_src plantuml  :exports results :noweb yes
+<<pumlsequence>>
 #+end_src
+#+REVEAL_HTML: </div>
 
-#+REVEAL: split
-
-- We can generate this nice looking graph
-
-#+ATTR_HTML: :style margin-top: 20px;
-#+begin_src plantuml :file ./images/plantuml/json.png :exports results
+*** Display JSON data
+#+REVEAL_HTML: <div class="column" style="float:left; width: 40%; font-size: 14px;">
+#+CAPTION: JSON Code
+#+begin_src json :exports code :noweb-ref pumljson
 @startjson
 #highlight "lastName"
 #highlight "address" / "city"
@@ -434,7 +410,173 @@ Bob --> Alice: Authentication Response (OK)
 }
 @endjson
 #+end_src
+#+REVEAL_HTML: </div>
 
+
+#+REVEAL_HTML: <div class="column" style="float:right; width: 60%">
+#+ATTR_HTML: :class glightbox
+#+begin_src plantuml  :exports results :noweb yes
+<<pumljson>>
+#+end_src
+#+REVEAL_HTML: </div>
+*** Same for YAML
+#+REVEAL_HTML: <div class="column" style="float:left; width: 40%; font-size: 14px;">
+#+CAPTION: YAML Code
+#+begin_src yaml :exports code :noweb-ref pumlyaml
+@startyaml
+#highlight "french-hens"
+#highlight "xmas-fifth-day" / "partridges"
+
+doe: "a deer, a female deer"
+ray: "a drop of golden sun"
+pi: 3.14159
+xmas: true
+french-hens: 3
+calling-birds:
+    - huey
+    - dewey
+    - louie
+    - fred
+xmas-fifth-day:
+    calling-birds: four
+    french-hens: 3
+    golden-rings: 5
+    partridges:
+        count: 1
+        location: "a pear tree"
+    turtle-doves: two
+@endyaml
+
+#+end_src
+#+REVEAL_HTML: </div>
+
+
+#+REVEAL_HTML: <div class="column" style="float:right; width: 60%">
+#+ATTR_HTML: :class glightbox
+#+begin_src plantuml  :exports results :noweb yes
+<<pumlyaml>>
+#+end_src
+#+REVEAL_HTML: </div>
+*** Simple network diagrams
+#+REVEAL_HTML: <div class="column" style="float:left; width: 40%; font-size: 14px;">
+#+CAPTION: Network diagram
+#+begin_src text :exports code :noweb-ref pumlnetwork
+@startuml
+scale 720 width
+skinparam dpi 300
+skinparam backgroundcolor transparent
+
+nwdiag {
+  network NETWORK_BASE {
+   width = full
+   dev_A   [address = "dev_A" ]
+   dev_B [address = "dev_B" ]
+  }
+  network IntNET1 {
+   width = full
+   dev_B [address = "dev_B1" ]
+   dev_M [address = "dev_M1" ]
+  }
+}
+@enduml
+#+end_src
+#+REVEAL_HTML: </div>
+
+
+#+REVEAL_HTML: <div class="column" style="float:right; width: 60%; height: 550px;">
+#+ATTR_HTML: :class glightbox
+#+begin_src plantuml  :exports results :noweb yes
+<<pumlnetwork>>
+#+end_src
+#+REVEAL_HTML: </div>
+*** C4 ACME Example
+#+CAPTION: C4 ACME Example
+#+begin_src plantuml :exports none :noweb-ref pumlc4acme
+@startuml
+scale 720 width
+skinparam dpi 300
+skinparam backgroundcolor transparent
+
+!include  <C4/C4_Context.puml>
+!include <office/Users/user.puml>
+
+LAYOUT_WITH_LEGEND()
+
+
+title Top level Context diagram for ACME Global Widget Production
+
+
+Person(AcmeProdOwner, Acme Production Owner , "<$user> \n Responsible for Production of widgets in ACME Production Site" )
+Person(3rdProdOwner, 3rdParty Production Owner , "<$user> \n Responsible for Production of widgets in 3rdParty Production Site" )
+
+
+System_Boundary(Remote, "Remote") {
+
+    System(ProdSystemHost, "Production Host", "Drives widget Production\n Analyses widget Production data to create reports")
+    System(Analytics, "Analytics", "Provides data analysis and a dashboard view data - including relevant Production data")
+    System(Monitoring, "Monitoring", "Monitors Production Host\nUses AWS Services")
+    System_Ext(SupplyChain, "SupplyChain", "Provides parts to make the widgets")
+    System_Ext(InventoryTracking, "InventoryTracking", "Customer Reference")
+
+
+}
+
+
+
+Enterprise_Boundary(AcmeProd, "ACME Production Site") {
+
+    System(AcmeWorkStation1, "WorkStation1", " Production setup for a group of widgets")
+    System(AcmeWorkStation2, "WorkStation2", " Production setup for a group of widgets")
+    System(AcmeWorkStationN, "WorkStationN", " Production setup for a group of widgets")
+
+}
+
+
+Enterprise_Boundary(3rdProd, "3rdParty Production Site") {
+
+
+    System(3rdWorkStation1, "WorkStation1", " Production setup for a group of widgets")
+    System(3rdWorkStation2, "WorkStation2", " Production setup for a group of widgets")
+    System(3rdWorkStationN, "WorkStationN", " Production setup for a group of widgets")
+}
+
+
+Rel_U(AcmeWorkStation1, ProdSystemHost, "Sends Production report for widget")
+Rel_U(AcmeWorkStation2, ProdSystemHost, "Sends Production report for widget")
+Rel_U(AcmeWorkStationN, ProdSystemHost, "Sends Production report for widget")
+
+
+Rel_U(3rdWorkStation1, ProdSystemHost, "Sends Production report for widget")
+Rel_U(3rdWorkStation2, ProdSystemHost, "Sends Production report for widget")
+Rel_U(3rdWorkStationN, ProdSystemHost, "Sends Production report for widget")
+
+
+
+
+
+Rel_D(AcmeProdOwner, ProdSystemHost, "Reviews Acme and 3rdParty site Production reports")
+Rel_D(3rdProdOwner, ProdSystemHost, "Reviews 3rdParty site Production reports")
+
+
+Rel_D(Analytics, ProdSystemHost, "Data Analysis")
+Rel_D(SupplyChain, ProdSystemHost, "Parts")
+Rel_D(InventoryTracking, ProdSystemHost, "Tracking")
+Rel_D(Monitoring, ProdSystemHost, "Monitoring")
+
+footer %filename() rendered with PlantUML version %version()\nThe Hitchhiker’s Guide to PlantUML
+
+@enduml
+#+end_src
+
+#+ATTR_HTML: :class glightbox
+#+begin_src plantuml  :exports results :noweb yes
+<<pumlc4acme>>
+#+end_src
+*** Source
+#+begin_src text :exports code :noweb yes
+<<pumlc4acme>>
+#+end_src
+*** Source
 * Headline
   :PROPERTIES:
   :reveal_extra_attr: data-background-video="https://static.slid.es/site/homepage/v1/homepage-video-editor.mp4" data-background-video-loop data-background-video-muted
